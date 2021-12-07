@@ -689,4 +689,20 @@ class PaymentHelper
         }
         return !empty($tid_status) ? $tid_status : '';
     }
+    
+    public function getOrderObject($orderId) 
+    {
+        try {
+            $orderId = (int)$orderId;
+            /** @var \Plenty\Modules\Authorization\Services\AuthHelper $authHelper */
+            $authHelper = pluginApp(AuthHelper::class);
+            /** @var Order $order */
+            $order = $authHelper->processUnguarded(function () use ($orderId) {
+                    return $this->orderRepository->findOrderById($orderId);
+            });
+            return $order;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
 }
