@@ -22,6 +22,7 @@ use Novalnet\Helper\PaymentHelper;
 use Novalnet\Services\PaymentService;
 use Plenty\Modules\Basket\Models\Basket;
 use Plenty\Modules\Basket\Contracts\BasketRepositoryContract;
+use Plenty\Plugin\Log\Loggable;
 
 /**
  * Class NovalnetPaymentMethod
@@ -30,6 +31,7 @@ use Plenty\Modules\Basket\Contracts\BasketRepositoryContract;
  */
 class NovalnetInvoicePaymentMethod extends PaymentMethodService
 {
+    use Loggable;
     /**
      * @var ConfigRepository
      */
@@ -148,6 +150,7 @@ class NovalnetInvoicePaymentMethod extends PaymentMethodService
     {
         if($orderId > 0) {
            $orderObj = $this->paymentHelper->getOrderObject($orderId);
+            $this->getLogger(__METHOD__)->error('order', $orderObj);
            $orderAmount = $this->paymentHelper->ConvertAmountToSmallerUnit($orderObj->amounts[0]->invoiceTotal);
            $guarantee_status = $this->paymentService->getGuaranteeStatus($this->basket, 'NOVALNET_INVOICE', $orderAmount);
             if(!empty($guarantee_status) && !in_array($guarantee_status, ['normal', 'guarantee'])) {
